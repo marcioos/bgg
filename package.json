@@ -17,9 +17,9 @@
     "json",
     "promise"
   ],
-  "author": "Luis Montes",
+  "author": "Marcio Oliveira <marciottlg@gmail.com>",
   "contributors": [
-    "Marcio Oliveira <marciottlg@gmail.com>"
+    "Luis Montes"
   ],
   "license": "BSD-2-Clause",
   "bugs": {

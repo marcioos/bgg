@@ -1,34 +1,24 @@
-# BGG
+# BGG API axios client
 
-A promises aware boardgamegeek.com API client.
+Fork of [bgg](https://www.npmjs.com/package/bgg). Originally developed by [~monteslu](https://www.npmjs.com/~monteslu).
 
-Will support any of the commands available in the [BGG XMLAPI2 documentation](http://boardgamegeek.com/wiki/page/BGG_XML_API2)
+A promises aware boardgamegeek.com API client that uses [axios](https://www.npmjs.com/package/axios)
+
+Supports [BGG XMLAPI2](http://boardgamegeek.com/wiki/page/BGG_XML_API2)
 
 ## install
 
 `
-npm install bgg
+npm install bgg-axios
 `
 
 ## Usage
 
 ```javascript
-// all options are optional
-var options = {
-  timeout: 10000, // timeout of 10s (5s is the default)
+const bgg = require('bgg')
 
-  // see https://github.com/cujojs/rest/blob/master/docs/interceptors.md#module-rest/interceptor/retry
-  retry: {
-    initial: 100,
-    multiplier: 2,
-    max: 15e3
-  }
-}
-
-var bgg = require('bgg')(options);
-
-bgg('user', {name: 'monteslu', guilds: 1})
-  .then(function(results){
-    console.log(results);
-  });
+bgg('collection', { username: 'marcio_os' })
+  .then(function (results) {
+    console.log(results)
+  })
 ```

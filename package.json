@@ -1,7 +1,7 @@
 {
-  "name": "bgg",
+  "name": "bgg-axios",
   "version": "1.1.0",
-  "description": "BoardGameGeek.com API client",
+  "description": "BoardGameGeek.com API axios client",
   "main": "index.js",
   "scripts": {
     "test": "node test/index.js"
@@ -15,7 +15,8 @@
     "bgg",
     "xmlapi",
     "json",
-    "promise"
+    "promise",
+    "axios"
   ],
   "author": "Marcio Oliveira <marciottlg@gmail.com>",
   "contributors": [

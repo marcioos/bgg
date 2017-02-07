@@ -1,5 +1,5 @@
-var axios = require('axios')
-var parser = require('xml2json')
+const axios = require('axios')
+const parser = require('xml2json')
 
 const REQUEST_TIMEOUT_MS = 10000
 const BACKOFF_TIME_MS = 2000

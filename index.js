@@ -1,33 +1,29 @@
-var rest = require('rest');
-var interceptor = require('./interceptor');
+var axios = require('axios');
+var parser = require('xml2json');
 
-var errorCodeInterceptor = require('rest/interceptor/errorCode');
-var pathPrefixInterceptor = require('rest/interceptor/pathPrefix');
-var mimeInterceptor = require('rest/interceptor/mime');
-var retryInterceptor = require('rest/interceptor/retry');
-var timeoutInterceptor = require('rest/interceptor/timeout');
-
-module.exports = function(config) {
-
-  var config = config || {};
-  
-  var restCall = rest
-    .wrap(pathPrefixInterceptor, { prefix: 'https://www.boardgamegeek.com/xmlapi2/'})
-    .wrap(mimeInterceptor, {mime:'text/xml', accept: 'text/xml'})
-    .wrap(errorCodeInterceptor)
-    .wrap(interceptor)
-    .wrap(timeoutInterceptor, { timeout: config.timeout || 5000 });
-  
-  if(config.retry) {
-    restCall = restCall.wrap(retryInterceptor, config.retry);
+const axiosInstance = axios.create({
+  baseURL: 'https://www.boardgamegeek.com/xmlapi2/',
+  timeout: 5000,
+  headers: {
+    'Accept': 'text/xml',
+    'Content-Type': 'text/xml'
   }
-  
-  return function(path, params){
-    var restConfig = {path: path};
-    if(params){
-      restConfig.params = params;
-    }
-    return restCall(restConfig);
-  };
-}
+})
 
+axiosInstance.interceptors.response.use(function (response) {
+  return parser.toJson(response.data, { object: true })
+})
+
+module.exports = function(path, parameters = {}) {
+
+  const queryString = Object.keys(parameters).reduce(function (prev, key) {
+    let parameter = ''
+
+    if (prev !== '?') {
+      parameter += '&'
+    }
+    return `${prev}${parameter}${key}=${parameters[key]}`
+  }, '?')
+
+  return axiosInstance.get(`${path}${queryString}`)
+}

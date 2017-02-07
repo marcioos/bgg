@@ -1,8 +1,3 @@
-var bgg = require('../')();
+var bgg = require('../');
 
-var log = console.log.bind(console);
-var error = console.error.bind(console);
-
-
-bgg('user', {name: 'monteslu', guilds: 1})
-  .then(log, error);
+bgg('collection', { username: 'marcio_os' }).then((response) => console.log(response)).catch((error) => console.log(error));

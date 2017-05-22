@@ -17,8 +17,14 @@ npm install bgg-axios
 ```javascript
 const bgg = require('bgg')
 
-bgg('collection', { username: 'marcio_os' })
+bgg.apiRequest('collection', { username: 'marcio_os' })
+  .then(function (results) {
+    console.log(results)
+  })
+
+bgg.search('arkham horror')
   .then(function (results) {
     console.log(results)
   })
 ```
+The search function has an optional second parameter to limit the number of results (default: 3).

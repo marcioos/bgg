@@ -5,7 +5,7 @@ const REQUEST_TIMEOUT_MS = 10000
 const BACKOFF_TIME_MS = 2000
 const MAX_RETRIES = 10
 
-const axiosInstance = axios.create({
+const apiClient = axios.create({
   baseURL: 'https://www.boardgamegeek.com/xmlapi2/',
   timeout: REQUEST_TIMEOUT_MS,
   headers: {
@@ -14,12 +14,10 @@ const axiosInstance = axios.create({
   }
 })
 
-axiosInstance.interceptors.response.use(function (response) {
-  return parser.toJson(response.data, { object: true })
-})
+apiClient.interceptors.response.use((response) => parser.toJson(response.data, { object: true }))
 
 function buildQueryString (parameters) {
-  return Object.keys(parameters).reduce(function (prev, key) {
+  return Object.keys(parameters).reduce((prev, key) => {
     let parameter = ''
     if (prev !== '?') {
       parameter += '&'
@@ -28,25 +26,43 @@ function buildQueryString (parameters) {
   }, '?')
 }
 
-function doRequest (path, queryString, retries = 0) {
-  return axiosInstance.get(`${path}${queryString}`)
-          .then(function (response) {
-            if (response.message && response.message.includes('processed')) {
-              if (retries === MAX_RETRIES) {
-                throw new Error('Maximum retries reached')
-              }
-              return new Promise(function (resolve, reject) {
-                setTimeout(function () {
-                  resolve(doRequest(path, queryString, ++retries))
-                }, BACKOFF_TIME_MS)
-              })
-            }
-            return response
-          })
+function doApiRequest (path, queryString = '', retries = 0) {
+  return apiClient
+    .get(`${path}${queryString}`)
+    .then((response) => {
+      if (response.message && response.message.includes('processed')) {
+        if (retries === MAX_RETRIES) {
+          throw new Error('Maximum retries reached')
+        }
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve(doRequest(path, queryString, ++retries))
+          }, BACKOFF_TIME_MS)
+        })
+      }
+      return response
+    })
 }
 
-module.exports = function(path, parameters = {}) {
-  const queryString = buildQueryString(parameters)
+const searchClient = axios.create({
+  baseURL: 'https://www.boardgamegeek.com/search/',
+  timeout: REQUEST_TIMEOUT_MS,
+  headers: {
+    'Accept': 'application/json, text/plain',
+    'Cache-Control': 'no-cache',
+    'Pragma': 'no-cache'
+  }
+})
 
-  return doRequest(path, queryString)
+module.exports = {
+  apiRequest: (path, parameters = {}) => {
+    const queryString = buildQueryString(parameters)
+    return doApiRequest(path, queryString)
+  },
+  search: (term, maxResults = 3) => {
+    const encodedTerm = encodeURI(term)
+    return searchClient
+      .get(`boardgame?q=${encodedTerm}&showcount=${maxResults}`)
+      .then((response) => response.data)
+  }
 }

@@ -1,6 +1,6 @@
 {
   "name": "bgg-axios",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "BoardGameGeek.com API axios client",
   "main": "index.js",
   "scripts": {

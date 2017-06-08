@@ -36,7 +36,7 @@ function doApiRequest (path, queryString = '', retries = 0) {
         }
         return new Promise((resolve, reject) => {
           setTimeout(() => {
-            resolve(doRequest(path, queryString, ++retries))
+            resolve(doApiRequest(path, queryString, ++retries))
           }, BACKOFF_TIME_MS)
         })
       }
